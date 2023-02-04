@@ -2,6 +2,7 @@ import express from "express";
 import fs from "fs";
 import type { Videogame } from "./domain/videogame";
 import cors from "cors";
+import validateUserInput from "../validateUserInput";
 
 const app = express();
 
@@ -22,6 +23,23 @@ app.post("/videogame", function (req, res) {
   const genre = req.body.genre;
   const ratingESRB = req.body.ratingESRB;
   const goodGame = req.body.goodGame;
+
+  try {
+    validateUserInput(
+      name,
+      platform,
+      yearOfRelease,
+      genre,
+      ratingESRB,
+      goodGame
+    );
+  } catch (e) {
+    res.status(404).send({
+      error: e.message,
+    });
+    return;
+  }
+
   const videogame: Videogame = {
     name: name,
     platform: platform,
